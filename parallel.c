@@ -67,17 +67,29 @@ int main(int argc, char *argv[]) {
         printf("Total time for thread %d (in sec):%.2f\n", nthreads, time);
     }
 
-    // Write matrix with minimum distances to outputFile
-    if ((outputFile = fopen(strcat(argv[1], "_out"), "w+t")) == NULL) {
-        printf("Cannot create the file %s\n", argv[1]);
+    // Compare results of parallel execution with sequential execution of Floyd Warshall.
+    if ((outputFile = fopen(strcat(argv[1], "_out"), "r")) == NULL) {
+        printf("Cannot open the output file %s\n", argv[1]);
         exit(1);
     }
-    fprintf(outputFile, "%d\n", nodeCount);
+    int nodeCountSaved = 0;
+    fscanf(outputFile, "%d", &nodeCountSaved);
+    if(nodeCount!=nodeCountSaved) {
+        printf("Sequential and parallel results do not match please verify code.\n");
+        return 0;
+    }
+    
+    int tempVar = 0;
     for (start = 0; start < nodeCount; start++) {
         for (end = 0; end < nodeCount; end++) {
-            fprintf(outputFile, "%d ", distanceMatrix[start][end]);
+            fscanf(outputFile, "%d ", &tempVar);
+            if(tempVar!=distanceMatrix[start][end]) {
+                printf("Sequential and parallel results do not match please verify code 2.\n");
+                return 0;
+            }
         }
-        fprintf(outputFile, "\n");
     }
+    printf("The results of sequential and parallel code match!");
     fclose(outputFile);
+    return 0;
 }
