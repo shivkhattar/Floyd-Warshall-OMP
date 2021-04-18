@@ -1,4 +1,3 @@
-// Import header files for program
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -13,41 +12,39 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    int rows, columns, middle;
-
     FILE *inputFile, *outputFile;
-
-    int N = 0;
+    int nodeCount = 0;
 
     if ((inputFile = fopen(argv[1], "r")) == NULL) {
-        printf("Error! opening file");
+        printf("Error in opening file");
         exit(1);
     }
-    fscanf(inputFile, "%d", &N);
+    fscanf(inputFile, "%d", &nodeCount);
 
-    //Define matrix of size N * N to store distances between nodes
-    //Initialize all distances to zero
-    int distanceMatrix[N][N];
-    memset(distanceMatrix, 0, N * N * sizeof(int));
+    int distanceMatrix[nodeCount][nodeCount];
+    memset(distanceMatrix, 0, nodeCount * nodeCount * sizeof(int));
 
     //Initialize the graph with random distances from the input file
-    for (rows = 0; rows < N; rows++) {
-        for (columns = 0; columns < N; columns++) {
-            //Distances are generated to be between 0 and 19
-            distanceMatrix[rows][columns] = fscanf(inputFile, "%d ", &distanceMatrix[rows][columns]);
+    for (i = 0; i < nodeCount; i++) {
+        for (j = 0; j < nodeCount; j++) {
+            //Distances are generated to be between 1 and 20
+            fscanf(inputFile, "%d", &distanceMatrix[i][j]);
         }
     }
+    fclose(inputFile);
+
+    int start, end, middle;
     //Define time variable to record start time for execution of program
     double startTime = omp_get_wtime();
 
     // Floyd Warshall Algorithm to converge to minimum distances between all pairs of nodes
     for (middle = 0; middle < N; middle++) {
         int *dm = distanceMatrix[middle];
-        for (rows = 0; rows < N; rows++) {
+        for (start = 0; start < N; start++) {
             int *ds = distanceMatrix[rows];
-            for (columns = 0; columns < N; columns++) {
-                if (ds[columns] > (ds[middle] + dm[columns])) {
-                    ds[columns] = ds[middle] + dm[columns];
+            for (end = 0; end < N; end++) {
+                if (ds[middle] + dm[end] < ds[end]) {
+                    ds[end] = ds[middle] + dm[end];
                 }
             }
         }
@@ -61,13 +58,12 @@ int main(int argc, char *argv[]) {
         printf("Cannot create the file %s\n", argv[1]);
         exit(1);
     }
-    
-    for (rows = 0; rows < N; rows++) {
-        for (columns = 0; columns < N; columns++) {
-            fprintf(outputFile, "%d ", distanceMatrix[rows][columns]);
+    fprintf(outputFile, "%d", N);
+    for (start = 0; start < N; start++) {
+        for (end = 0; end < N; end++) {
+            fprintf(outputFile, "%d ", distanceMatrix[start][end]);
         }
+        fprintf(outputFile, "\n");
     }
-
-    fclose(inputFile);
     fclose(outputFile);
 }
