@@ -21,8 +21,10 @@ int main(int argc, char *argv[]) {
     }
     fscanf(inputFile, "%d", &nodeCount);
 
-    int distanceMatrix[nodeCount][nodeCount];
-    memset(distanceMatrix, 0, nodeCount * nodeCount * sizeof(int));
+    int *distanceMatrix[nodeCount];
+    for (int i = 0; i < nodeCount; i++) {
+        distanceMatrix[i] = malloc(nodeCount * sizeof(int));
+    }
 
     //Initialize the graph with random distances from the input file
     for (int i = 0; i < nodeCount; i++) {

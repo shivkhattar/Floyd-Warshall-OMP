@@ -23,8 +23,10 @@ int main(int argc, char *argv[]) {
     }
     fscanf(inputFile, "%d", &nodeCount);
 
-    int distanceMatrix[nodeCount][nodeCount];
-    memset(distanceMatrix, 0, nodeCount * nodeCount * sizeof(int));
+    int *distanceMatrix[nodeCount];
+    for (int i = 0; i < nodeCount; i++) {
+        distanceMatrix[i] = malloc(nodeCount * sizeof(int));
+    }
 
     //Initialize the graph with random distances from the input file
     for (int i = 0; i < nodeCount; i++) {
@@ -36,15 +38,15 @@ int main(int argc, char *argv[]) {
     fclose(inputFile);
 
     int start, end, middle;
-    
-    for(int nthreads=1; nthreads <= maxNumThreads; nthreads++) {
+
+    for (int nthreads = 1; nthreads <= maxNumThreads; nthreads++) {
         //Define different number of threads
         omp_set_num_threads(nthreads);
-        
+
         // Define iterator to iterate over distance matrix
         //Define time variable to record start time for execution of program
         double startTime = omp_get_wtime();
-        
+
         /* Taking a node as mediator
         check if indirect distance between source and distance via mediator
         is less than direct distance between them */
@@ -52,7 +54,7 @@ int main(int argc, char *argv[]) {
         // Floyd Warshall Algorithm to converge to minimum distances between all pairs of nodes
         for (middle = 0; middle < nodeCount; middle++) {
             int *dm = distanceMatrix[middle];
-            #pragma omp parallel for private(start, end) schedule(dynamic)
+        #pragma omp parallel for private(start, end) schedule(dynamic)
             for (start = 0; start < nodeCount; start++) {
                 int *ds = distanceMatrix[start];
                 for (end = 0; end < nodeCount; end++) {
@@ -72,20 +74,21 @@ int main(int argc, char *argv[]) {
         printf("Cannot open the output file %s\n", argv[1]);
         exit(1);
     }
+
     int nodeCountSaved = 0;
     fscanf(outputFile, "%d", &nodeCountSaved);
-    if(nodeCount!=nodeCountSaved) {
+    if (nodeCount != nodeCountSaved) {
         printf("Sequential and parallel results do not match please verify code.\n");
-        return 0;
+        exit(1);
     }
-    
+
     int tempVar = 0;
     for (start = 0; start < nodeCount; start++) {
         for (end = 0; end < nodeCount; end++) {
             fscanf(outputFile, "%d ", &tempVar);
-            if(tempVar!=distanceMatrix[start][end]) {
+            if (tempVar != distanceMatrix[start][end]) {
                 printf("Sequential and parallel results do not match please verify code 2.\n");
-                return 0;
+                exit(1);
             }
         }
     }
