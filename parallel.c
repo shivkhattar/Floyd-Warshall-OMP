@@ -6,14 +6,18 @@
 #include <omp.h>
 
 int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        printf("usage: ./parallel fileName maxNumThreads\n");
+    if (argc != 5) {
+        printf("usage: ./parallel fileName minNumThreads maxNumThreads flag\n");
         printf("fileName: the name of the file containing input node values\n");
+        printf("minNumThreads: minimum number of threads to parallelize\n");
         printf("maxNumThreads: maximum number of threads to parallelize\n");
+        printf("flag: (1 or 0) to check if sequential and parallel code match\n");
         exit(1);
     }
 
-    int maxNumThreads = atoi(argv[2]);
+    int minNumThreads = atoi(argv[2]);
+    int maxNumThreads = atoi(argv[3]);
+    int flag = atoi(argv[4]);
     FILE *inputFile, *outputFile;
     int nodeCount = 0;
 
@@ -39,7 +43,7 @@ int main(int argc, char *argv[]) {
 
     int start, end, middle;
 
-    for (int nthreads = 1; nthreads <= maxNumThreads; nthreads++) {
+    for (int nthreads = minNumThreads; nthreads <= maxNumThreads; nthreads++) {
         //Define different number of threads
         omp_set_num_threads(nthreads);
 
@@ -70,29 +74,31 @@ int main(int argc, char *argv[]) {
     }
 
     // Compare results of parallel execution with sequential execution of Floyd Warshall.
-    if ((outputFile = fopen(strcat(argv[1], "_out"), "r")) == NULL) {
-        printf("Cannot open the output file %s\n", argv[1]);
-        exit(1);
-    }
+    if(flag>0){
+        if ((outputFile = fopen(strcat(argv[1], "_out"), "r")) == NULL) {
+            printf("Cannot open the output file %s\n", argv[1]);
+            exit(1);
+        }
 
-    int nodeCountSaved = 0;
-    fscanf(outputFile, "%d", &nodeCountSaved);
-    if (nodeCount != nodeCountSaved) {
-        printf("Sequential and parallel results do not match please verify code.\n");
-        exit(1);
-    }
+        int nodeCountSaved = 0;
+        fscanf(outputFile, "%d", &nodeCountSaved);
+        if (nodeCount != nodeCountSaved) {
+            printf("Sequential and parallel results do not match please verify code.\n");
+            exit(1);
+        }
 
-    int tempVar = 0;
-    for (start = 0; start < nodeCount; start++) {
-        for (end = 0; end < nodeCount; end++) {
-            fscanf(outputFile, "%d ", &tempVar);
-            if (tempVar != distanceMatrix[start][end]) {
-                printf("Sequential and parallel results do not match please verify code 2.\n");
-                exit(1);
+        int tempVar = 0;
+        for (start = 0; start < nodeCount; start++) {
+            for (end = 0; end < nodeCount; end++) {
+                fscanf(outputFile, "%d ", &tempVar);
+                if (tempVar != distanceMatrix[start][end]) {
+                    printf("Sequential and parallel results do not match please verify code 2.\n");
+                    exit(1);
+                }
             }
         }
+        printf("The results of sequential and parallel code match!");
+        fclose(outputFile);
     }
-    printf("The results of sequential and parallel code match!");
-    fclose(outputFile);
     return 0;
 }
