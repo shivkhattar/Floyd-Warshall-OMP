@@ -25,8 +25,8 @@ int main(int argc, char *argv[]) {
     memset(distanceMatrix, 0, nodeCount * nodeCount * sizeof(int));
 
     //Initialize the graph with random distances from the input file
-    for (i = 0; i < nodeCount; i++) {
-        for (j = 0; j < nodeCount; j++) {
+    for (int i = 0; i < nodeCount; i++) {
+        for (int j = 0; j < nodeCount; j++) {
             //Distances are generated to be between 1 and 20
             fscanf(inputFile, "%d", &distanceMatrix[i][j]);
         }
@@ -38,11 +38,11 @@ int main(int argc, char *argv[]) {
     double startTime = omp_get_wtime();
 
     // Floyd Warshall Algorithm to converge to minimum distances between all pairs of nodes
-    for (middle = 0; middle < N; middle++) {
+    for (middle = 0; middle < nodeCount; middle++) {
         int *dm = distanceMatrix[middle];
-        for (start = 0; start < N; start++) {
-            int *ds = distanceMatrix[rows];
-            for (end = 0; end < N; end++) {
+        for (start = 0; start < nodeCount; start++) {
+            int *ds = distanceMatrix[start];
+            for (end = 0; end < nodeCount; end++) {
                 if (ds[middle] + dm[end] < ds[end]) {
                     ds[end] = ds[middle] + dm[end];
                 }
@@ -58,9 +58,9 @@ int main(int argc, char *argv[]) {
         printf("Cannot create the file %s\n", argv[1]);
         exit(1);
     }
-    fprintf(outputFile, "%d", N);
-    for (start = 0; start < N; start++) {
-        for (end = 0; end < N; end++) {
+    fprintf(outputFile, "%d\n", nodeCount);
+    for (start = 0; start < nodeCount; start++) {
+        for (end = 0; end < nodeCount; end++) {
             fprintf(outputFile, "%d ", distanceMatrix[start][end]);
         }
         fprintf(outputFile, "\n");
