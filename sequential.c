@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
 
     int rows, columns, middle;
 
-    FILE *inputFile;
+    FILE *inputFile, *outputFile;
 
     int N = 0;
 
@@ -55,4 +55,19 @@ int main(int argc, char *argv[]) {
 
     double time = omp_get_wtime() - startTime;
     printf("Total time for sequential (in sec):%.2f\n", time);
+
+    // Write matrix with minimum distances to outputFile
+    if ((outputFile = fopen(strcat(argv[1], "_out"), "w+t")) == NULL) {
+        printf("Cannot create the file %s\n", argv[1]);
+        exit(1);
+    }
+    
+    for (rows = 0; rows < N; rows++) {
+        for (columns = 0; columns < N; columns++) {
+            fprintf(outputFile, "%d ", distanceMatrix[rows][columns]);
+        }
+    }
+
+    fclose(inputFile);
+    fclose(outputFile);
 }
