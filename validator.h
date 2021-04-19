@@ -1,0 +1,1 @@
+extern void validateOutputs(const int *parallelOutput, const int *seqOutput, const int nodeCount);

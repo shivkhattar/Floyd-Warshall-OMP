@@ -1,0 +1,1 @@
+extern int *generateRandomWeightedEdges(const int nodeCount);
