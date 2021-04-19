@@ -1,1 +1,1 @@
-extern void parallel_floyd_warshall(const int *distanceMatrix, int *output, const int blockSize, const int nodeCount, const int nthreads);
+extern void parallelFloydWarshall(const int *distanceMatrix, int *output, const int blockSize, const int nodeCount, const int nthreads);

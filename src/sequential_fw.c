@@ -1,6 +1,6 @@
 #include <string.h>
 
-void sequential_floyd_warshall(const int *distanceMatrix, int *output, const int nodeCount) {
+void sequentialFloydWarshall(const int *distanceMatrix, int *output, const int nodeCount) {
     memcpy(output, distanceMatrix, nodeCount * nodeCount * sizeof(int));
     for (int middle = 0; middle < nodeCount; middle++) {
         for (int start = 0; start < nodeCount; start++) {
