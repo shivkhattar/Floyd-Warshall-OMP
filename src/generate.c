@@ -11,10 +11,14 @@ void print(const int *matrix, const int nodeCount);
 
 void save(const int *matrix, const int nodeCount);
 
-int *generateRandomWeightedEdges(const int nodeCount, const double connectedProbability, const bool printMatrix,
+int *generateRandomWeightedEdges(const int nodeCount, const double edgeProbability, const bool printMatrix,
                                  const bool saveMatrix) {
     if (nodeCount < 0) {
         printf("Invalid number of nodes provided: %d\n", nodeCount);
+        exit(1);
+    }
+    if (edgeProbability < 0 || edgeProbability > 1) {
+        printf("Invalid edge probability provided: %d\n", nodeCount);
         exit(1);
     }
     srand((unsigned) time(0));
@@ -26,7 +30,7 @@ int *generateRandomWeightedEdges(const int nodeCount, const double connectedProb
             int distance = 0;
             if (i != j) {
                 double randomProbability = (double) rand() / (double) RAND_MAX;
-                if (randomProbability >= connectedProbability) {
+                if (randomProbability >= edgeProbability) {
                     distance = 1 + (rand() % MAX_DISTANCE);
                 } else {
                     distance = INT_MAX / 2;
@@ -36,7 +40,7 @@ int *generateRandomWeightedEdges(const int nodeCount, const double connectedProb
         }
     }
 
-    printf("Generated %d graph nodes\n", nodeCount);
+    printf("Generated %d graph nodes with %.2f edge probability\n", nodeCount, edgeProbability);
 
     if (printMatrix) print(matrix, nodeCount);
     if (saveMatrix) save(matrix, nodeCount);

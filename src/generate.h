@@ -1,1 +1,1 @@
-extern int *generateRandomWeightedEdges(const int nodeCount, const double probability, const bool printMatrix, const bool saveMatrix);
+extern int *generateRandomWeightedEdges(const int nodeCount, const double edgeProbability, const bool printMatrix, const bool saveMatrix);
