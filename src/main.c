@@ -4,6 +4,7 @@
 #include <string.h>
 #include <time.h>
 #include <omp.h>
+#include <stdbool.h>
 
 #include "generate.h"
 #include "sequential_fw.h"
@@ -15,7 +16,7 @@ int main(int argc, char *argv[]) {
     int blockSize = 32;
     int nodeCount = 1024;
 
-    int *distanceMatrix = generateRandomWeightedEdges(nodeCount);
+    int *distanceMatrix = generateRandomWeightedEdges(nodeCount, 0.5, false, true);
 
     int *seqOutput;
     seqOutput = malloc(nodeCount * nodeCount * sizeof(int));
