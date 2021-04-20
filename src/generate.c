@@ -28,7 +28,7 @@ int *generateRandomWeightedEdges(const int nodeCount, const double edgeProbabili
             int distance = 0;
             if (i != j) {
                 double randomProbability = (double) rand() / (double) RAND_MAX;
-                if (randomProbability >= edgeProbability) {
+                if (randomProbability <= edgeProbability) {
                     distance = 1 + (rand() % MAX_DISTANCE);
                 } else {
                     distance = INT_MAX / 2;
