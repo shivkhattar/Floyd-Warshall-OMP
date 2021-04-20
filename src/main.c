@@ -13,13 +13,14 @@
 #include "validator.h"
 
 void getOptions(int argc, char **argv, int *nodeCount, double *probability, int *blockSize, int *minNumThreads,
-                int *maxNumThreads, bool *save, bool *prin, bool *validate, bool *runBenchmark);
+                int *maxNumThreads, int *maxIterations, bool *save, bool *prin, bool *validate, bool *runBenchmark);
 
 int *runSequentialFloydWarshall(const int *distanceMatrix, const int nodeCount, const bool printOutput,
                                 const bool saveOutput);
 
 void
-runBenchmark(int nodeCount, double probability, int blockSize, int minNumThreads, int maxNumThreads, bool validate);
+runBenchmark(int nodeCount, double probability, int blockSize, int minNumThreads, int maxNumThreads, int maxIterations,
+             bool validate);
 
 void run(int nodeCount, double probability, int blockSize, int minNumThreads, int maxNumThreads, bool print, bool save,
          bool validate, int maxIterations);
@@ -32,9 +33,10 @@ int main(int argc, char **argv) {
     int minNumThreads = 1, maxNumThreads = 10, blockSize = 32, nodeCount = 1024, maxIterations = 1;
     double probability = 0.5;
     bool save = false, print = false, validate = false, benchmark = false;
-    getOptions(argc, argv, &nodeCount, &probability, &blockSize, &minNumThreads, &maxNumThreads, &save, &print,
-               &validate, &benchmark);
-    if (benchmark) runBenchmark(nodeCount, probability, blockSize, minNumThreads, maxNumThreads, validate);
+    getOptions(argc, argv, &nodeCount, &probability, &blockSize, &minNumThreads, &maxNumThreads, &maxIterations, &save,
+               &print, &validate, &benchmark);
+    if (benchmark)
+        runBenchmark(nodeCount, probability, blockSize, minNumThreads, maxNumThreads, maxIterations, validate);
     else {
         if (nodeCount < blockSize) {
             printf("Incorrect block size: %d. Block size should be less than node count: %d\n", blockSize, nodeCount);
@@ -48,9 +50,9 @@ int main(int argc, char **argv) {
 }
 
 void getOptions(int argc, char **argv, int *nodeCount, double *probability, int *blockSize, int *minNumThreads,
-                int *maxNumThreads, bool *save, bool *print, bool *validate, bool *benchmark) {
+                int *maxNumThreads, int *maxIterations, bool *save, bool *print, bool *validate, bool *benchmark) {
     int opt = -1;
-    while ((opt = getopt(argc, argv, "n:e:b:t:m:spvr")) != -1) {
+    while ((opt = getopt(argc, argv, "n:e:b:t:m:spvri:")) != -1) {
         switch (opt) {
             case 'r':
                 *benchmark = true;
@@ -78,6 +80,9 @@ void getOptions(int argc, char **argv, int *nodeCount, double *probability, int 
                 break;
             case 'v':
                 *validate = true;
+                break;
+            case 'i:
+                sscanf(optarg, "%d", maxIterations);
                 break;
             case '?':
                 if (optopt == 'c')
@@ -118,12 +123,14 @@ double getAverageTime(double times[], int size) {
 }
 
 void
-runBenchmark(int nodeCount, double probability, int blockSize, int minNumThreads, int maxNumThreads, bool validate) {
+runBenchmark(int nodeCount, double probability, int blockSize, int minNumThreads, int maxNumThreads, int maxIterations,
+             bool validate) {
     printf("Nodes\t Prob  \tBlock\tThread\t  Seq\tPara \tSpeedup\n");
     for (; probability <= 1; probability += 0.5) {
-        for (; nodeCount <= 1024; nodeCount *= 2) {
+        for (; nodeCount <= 2048; nodeCount *= 2) {
             for (; blockSize <= nodeCount / 2 && blockSize <= 128; blockSize *= 2) {
-                run(nodeCount, probability, blockSize, minNumThreads, maxNumThreads, false, false, validate, 1);
+                run(nodeCount, probability, blockSize, minNumThreads, maxNumThreads, false, false, validate,
+                    maxIterations);
             }
         }
     }
