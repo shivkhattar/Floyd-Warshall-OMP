@@ -5,11 +5,9 @@
 #include <limits.h>
 #include <stdbool.h>
 
+#include "util.h"
+
 #define MAX_DISTANCE 100
-
-void print(const int *matrix, const int nodeCount);
-
-void save(const int *matrix, const int nodeCount);
 
 int *generateRandomWeightedEdges(const int nodeCount, const double edgeProbability, const bool printMatrix,
                                  const bool saveMatrix) {
@@ -42,31 +40,10 @@ int *generateRandomWeightedEdges(const int nodeCount, const double edgeProbabili
 
     printf("Generated %d graph nodes with %.2f edge probability\n", nodeCount, edgeProbability);
 
-    if (printMatrix) print(matrix, nodeCount);
-    if (saveMatrix) save(matrix, nodeCount);
+    if (printMatrix) {
+        printf('Printing generated Matrix: \n');
+        print(matrix, nodeCount);
+    }
+    if (saveMatrix) save(matrix, nodeCount, "data/matrix");
     return matrix;
-}
-
-void print(const int *matrix, const int nodeCount) {
-    for (int i = 0; i < nodeCount; i++) {
-        for (int j = 0; j < nodeCount; j++) {
-            printf("%d ", matrix[i * nodeCount + j]);
-        }
-        printf("\n");
-    }
-}
-
-void save(const int *matrix, const int nodeCount) {
-    FILE *fp;
-    if ((fp = fopen("data/matrix", "w+t")) == NULL) {
-        printf("Cannot create the matrix file\n");
-        exit(1);
-    }
-    fprintf(fp, "%d\n", nodeCount);
-    for (int i = 0; i < nodeCount; i++) {
-        for (int j = 0; j < nodeCount; j++) {
-            fprintf(fp, "%d ", matrix[i * nodeCount + j]);
-        }
-        fprintf(fp, "\n");
-    }
 }

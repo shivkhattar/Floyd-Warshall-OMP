@@ -4,6 +4,9 @@
 #include <string.h>
 #include <time.h>
 #include <omp.h>
+#include <stdbool.h>
+
+#include "util.h"
 
 static inline void
 floydWarshallPerBlock(int *output, const int *startBlock, const int *endBlock, const int blockSize,
@@ -21,7 +24,7 @@ floydWarshallPerBlock(int *output, const int *startBlock, const int *endBlock, c
 }
 
 void parallelFloydWarshall(const int *distanceMatrix, int *output, const int blockSize, const int nodeCount,
-                           const int nthreads) {
+                           const int nthreads, const bool printOutput, const bool saveOutput) {
     memcpy(output, distanceMatrix, nodeCount * nodeCount * sizeof(int));
     const int blocks = nodeCount / blockSize;
     omp_set_num_threads(nthreads);
@@ -57,5 +60,15 @@ void parallelFloydWarshall(const int *distanceMatrix, int *output, const int blo
                                       nodeCount);
             }
         }
+    }
+    if (printOutput) {
+        printf("Printing Parallel Output: \n");
+        print(output, nodeCount);
+    }
+
+    if (saveOutput) {
+        char filename[50];
+        snprintf(filename, sizeof filename, "data/parallel_output_%d", nthreads);
+        save(output, nodeCount, filename);
     }
 }

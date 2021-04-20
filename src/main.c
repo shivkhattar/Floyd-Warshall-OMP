@@ -15,7 +15,8 @@
 void getOptions(int argc, char **argv, int *nodeCount, double *probability, int *blockSize, int *minNumThreads,
                 int *maxNumThreads, bool *save, bool *prin, bool *validate);
 
-int *runSequentialFloydWarshall(const int *distanceMatrix, const int nodeCount);
+int *runSequentialFloydWarshall(const int *distanceMatrix, const int nodeCount, const bool printOutput,
+                                const bool saveOutput);
 
 int *
 runParallelFloydWarshall(const int *distanceMatrix, const int nodeCount, const int blockSize, const int threadCount);
@@ -26,12 +27,17 @@ int main(int argc, char **argv) {
     bool save = false, print = false, validate = false;
     getOptions(argc, argv, &nodeCount, &probability, &blockSize, &minNumThreads, &maxNumThreads, &save, &print,
                &validate);
-    if (nodeCount < blockSize) blockSize = nodeCount;
+    if (nodeCount < blockSize) {
+        printf("Incorrect block size: %d. Block size should be less than node count: %d\n", blockSize, nodeCount);
+        exit(1);
+    } else if (nodeCount % blockSize != 0) {
+        printf("Incorrect block size: %d. Blocksize should exactly divide node count: %d\n", blockSize, nodeCount);
+        exit(1);
+    }
     int *distanceMatrix = generateRandomWeightedEdges(nodeCount, probability, print, save);
 
-
     double startTime = omp_get_wtime();
-    int *seqOutput = runSequentialFloydWarshall(distanceMatrix, nodeCount);
+    int *seqOutput = runSequentialFloydWarshall(distanceMatrix, nodeCount, print, save);
     double seqTime = omp_get_wtime() - startTime;
     printf("Total time for sequential (in sec):%.2f\n", seqTime);
 
@@ -85,11 +91,12 @@ void getOptions(int argc, char **argv, int *nodeCount, double *probability, int 
     }
 }
 
-int *runSequentialFloydWarshall(const int *distanceMatrix, const int nodeCount) {
+int *runSequentialFloydWarshall(const int *distanceMatrix, const int nodeCount, const bool printOutput,
+                                const bool saveOutput) {
     int *seqOutput;
     seqOutput = malloc(nodeCount * nodeCount * sizeof(int));
     memset(seqOutput, 0, nodeCount * nodeCount * sizeof(int));
-    sequentialFloydWarshall(distanceMatrix, seqOutput, nodeCount);
+    sequentialFloydWarshall(distanceMatrix, seqOutput, nodeCount, printOutput, saveOutput);
     return seqOutput;
 }
 
@@ -98,6 +105,6 @@ runParallelFloydWarshall(const int *distanceMatrix, const int nodeCount, const i
     int *output;
     output = malloc(nodeCount * nodeCount * sizeof(int));
     memset(output, 0, nodeCount * nodeCount * sizeof(int));
-    parallelFloydWarshall(distanceMatrix, output, blockSize, nodeCount, threadCount);
+    parallelFloydWarshall(distanceMatrix, output, blockSize, nodeCount, threadCount, true, true);
     return output;
 }
