@@ -19,7 +19,8 @@ int *runSequentialFloydWarshall(const int *distanceMatrix, const int nodeCount, 
                                 const bool saveOutput);
 
 int *
-runParallelFloydWarshall(const int *distanceMatrix, const int nodeCount, const int blockSize, const int threadCount);
+runParallelFloydWarshall(const int *distanceMatrix, const int nodeCount, const int blockSize, const int threadCount,
+                         const bool printOutput, const bool saveOutput);
 
 int main(int argc, char **argv) {
     int minNumThreads = 1, maxNumThreads = 1, blockSize = 32, nodeCount = 1024;
@@ -101,10 +102,11 @@ int *runSequentialFloydWarshall(const int *distanceMatrix, const int nodeCount, 
 }
 
 int *
-runParallelFloydWarshall(const int *distanceMatrix, const int nodeCount, const int blockSize, const int threadCount) {
+runParallelFloydWarshall(const int *distanceMatrix, const int nodeCount, const int blockSize, const int threadCount,
+                         const bool printOutput, const bool saveOutput) {
     int *output;
     output = malloc(nodeCount * nodeCount * sizeof(int));
     memset(output, 0, nodeCount * nodeCount * sizeof(int));
-    parallelFloydWarshall(distanceMatrix, output, blockSize, nodeCount, threadCount, true, true);
+    parallelFloydWarshall(distanceMatrix, output, blockSize, nodeCount, threadCount, printOutput, saveOutput);
     return output;
 }
