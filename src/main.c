@@ -81,7 +81,7 @@ void getOptions(int argc, char **argv, int *nodeCount, double *probability, int 
             case 'v':
                 *validate = true;
                 break;
-            case 'i:
+            case 'i':
                 sscanf(optarg, "%d", maxIterations);
                 break;
             case '?':
@@ -164,7 +164,6 @@ run(int nodeCount, double probability, int blockSize, int minNumThreads, int max
         printf("%5d\t%5.2f\t%5.2f\t%5.2fx\n", threadCount, seqTime, parallelTime, seqTime / parallelTime);
         if (validate) validateOutputs(parallelOutput, seqOutput, nodeCount);
     }
-    printf("\n");
 }
 
 int *runSequentialFloydWarshall(const int *distanceMatrix, const int nodeCount, const bool printOutput,
