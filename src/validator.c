@@ -12,5 +12,4 @@ void validateOutputs(const int *parallelOutput, const int *seqOutput, const int 
             }
         }
     }
-    printf("Outputs Match\n");
 }

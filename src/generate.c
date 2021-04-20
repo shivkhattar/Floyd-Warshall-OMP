@@ -37,11 +37,8 @@ int *generateRandomWeightedEdges(const int nodeCount, const double edgeProbabili
             matrix[i * nodeCount + j] = distance;
         }
     }
-
-    printf("Generated %d graph nodes with %.2f edge probability\n", nodeCount, edgeProbability);
-
     if (printMatrix) {
-        printf('Printing generated Matrix: \n');
+        printf("Printing generated Matrix: \n");
         print(matrix, nodeCount);
     }
     if (saveMatrix) save(matrix, nodeCount, "data/matrix");
