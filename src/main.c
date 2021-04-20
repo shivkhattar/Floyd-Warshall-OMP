@@ -35,18 +35,17 @@ int main(int argc, char **argv) {
     bool save = false, print = false, validate = false, benchmark = false;
     getOptions(argc, argv, &nodeCount, &probability, &blockSize, &minNumThreads, &maxNumThreads, &maxIterations, &save,
                &print, &validate, &benchmark);
+    if (nodeCount < blockSize) {
+        printf("Incorrect block size: %d. Block size should be less than node count: %d\n", blockSize, nodeCount);
+        exit(1);
+    } else if (nodeCount % blockSize != 0) {
+        printf("Incorrect block size: %d. Blocksize should exactly divide node count: %d\n", blockSize, nodeCount);
+        exit(1);
+    }
     if (benchmark)
         runBenchmark(nodeCount, probability, blockSize, minNumThreads, maxNumThreads, maxIterations, validate);
-    else {
-        if (nodeCount < blockSize) {
-            printf("Incorrect block size: %d. Block size should be less than node count: %d\n", blockSize, nodeCount);
-            exit(1);
-        } else if (nodeCount % blockSize != 0) {
-            printf("Incorrect block size: %d. Blocksize should exactly divide node count: %d\n", blockSize, nodeCount);
-            exit(1);
-        }
+    else
         run(nodeCount, probability, blockSize, minNumThreads, maxNumThreads, print, save, validate, maxIterations);
-    }
 }
 
 void getOptions(int argc, char **argv, int *nodeCount, double *probability, int *blockSize, int *minNumThreads,
