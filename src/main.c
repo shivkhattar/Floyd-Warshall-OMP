@@ -42,6 +42,7 @@ int main(int argc, char **argv) {
         printf("Incorrect block size: %d. Blocksize should exactly divide node count: %d\n", blockSize, nodeCount);
         exit(1);
     }
+    printf("Nodes\t Prob  \tBlock\tThread\t  Seq\tPara \tSpeedup\n");
     if (benchmark)
         runBenchmark(nodeCount, probability, blockSize, minNumThreads, maxNumThreads, maxIterations, validate);
     else
@@ -124,7 +125,6 @@ double getAverageTime(double times[], int size) {
 void
 runBenchmark(int nodeCount, double probability, int blockSize, int minNumThreads, int maxNumThreads, int maxIterations,
              bool validate) {
-    printf("Nodes\t Prob  \tBlock\tThread\t  Seq\tPara \tSpeedup\n");
     for (; probability <= 1; probability += 0.5) {
         for (; nodeCount <= 2048; nodeCount *= 2) {
             for (; blockSize <= nodeCount / 2 && blockSize <= 128; blockSize *= 2) {
